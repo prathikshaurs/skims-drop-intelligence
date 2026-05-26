@@ -8,8 +8,10 @@ apparel behavior:
   - Smaller sizes (XXS, XS) return more often
   - ONYX-tier customers order more, engage more, join more waitlists
 
-DISCLAIMER: This is synthetic data. No real SKIMS customer or sales data is
-used. Author has no affiliation with SKIMS.
+DISCLAIMER: This dashboard uses 100% synthetic data
+generated for demonstration purposes. No real SKIMS customer, product, or
+sales data is used. I have no affiliation with SKIMS and no access to
+internal data.
 """
 
 import os
