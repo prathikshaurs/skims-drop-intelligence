@@ -29,53 +29,232 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ========== SKIMS BRAND COLORS ==========
+SKIMS = {
+    'onyx':        '#1a1a1a',
+    'warm_white':  '#f5f0eb',
+    'sand':        '#c4a882',
+    'cocoa':       '#8b6f5e',
+    'sienna':      '#a0522d',
+    'marble':      '#d4c5b5',
+    'light_nude':  '#e8ddd4',
+    'blush':       '#d4a896',
+    'deep_brown':  '#4a3728',
+    'taupe':       '#b8a898',
+    'soft_grey':   '#f0ebe5',
+    'mid_grey':    '#9e9189',
+}
+
+# Sequential palette for charts (light to dark, all warm)
+SKIMS_SEQ = [
+    '#e8ddd4', '#d4c5b5', '#c4a882',
+    '#b8a898', '#8b6f5e', '#4a3728'
+]
+
+# Categorical palette for multi-color charts
+SKIMS_CAT = [
+    '#c4a882', '#8b6f5e', '#d4a896',
+    '#a0522d', '#4a3728', '#d4c5b5',
+    '#b8a898', '#1a1a1a'
+]
+
+# Tier-specific colors
+TIER_COLORS = {
+    'ONYX':   '#4a3728',
+    'MARBLE': '#b8a898',
+    'none':   '#e8ddd4'
+}
+
 # ========== STYLING ==========
 st.markdown("""
 <style>
-    /* Main background */
-    .stApp { background-color: #fafafa; }
+    /* Import Google Font - closest free alternative to SKIMS' clean sans */
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@200;300;400;500&display=swap');
+
+    /* Main app background - warm off white */
+    .stApp {
+        background-color: #f5f0eb;
+        font-family: 'Jost', sans-serif;
+    }
+
+    /* All text */
+    .stApp p, .stApp li, .stApp span, .stApp div {
+        font-family: 'Jost', sans-serif;
+        font-weight: 300;
+        color: #1a1a1a;
+        letter-spacing: 0.02em;
+    }
+
+    /* Headers */
+    .stApp h1 {
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 300;
+        font-size: 2.8rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #1a1a1a;
+    }
+
+    .stApp h2 {
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 300;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
+        color: #1a1a1a;
+    }
+
+    .stApp h3 {
+        font-family: 'Jost', sans-serif;
+        font-weight: 400;
+        font-size: 0.85rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #8b6f5e;
+        margin-bottom: 16px;
+    }
 
     /* Metric cards */
     [data-testid="metric-container"] {
         background-color: #ffffff;
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
-        padding: 16px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid #e8ddd4;
+        border-radius: 2px;
+        padding: 20px;
+        box-shadow: none;
     }
 
-    /* Sidebar */
-    [data-testid="stSidebar"] {
-        background-color: #111111;
+    [data-testid="metric-container"] label {
+        font-family: 'Jost', sans-serif;
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #8b6f5e !important;
+        font-weight: 400;
     }
+
+    [data-testid="metric-container"] [data-testid="stMetricValue"] {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 300;
+        color: #1a1a1a;
+    }
+
+    /* Sidebar - deep onyx */
+    [data-testid="stSidebar"] {
+    background-color: #3d3028;
+    border-right: none;
+    }
+
     [data-testid="stSidebar"] * {
-        color: #ffffff !important;
+        color: #f5f0eb !important;
+        font-family: 'Jost', sans-serif !important;
+        letter-spacing: 0.05em;
+    }
+
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3 {
+        color: #c4a882 !important;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        font-size: 0.75rem !important;
+    }
+
+    [data-testid="stSidebar"] .stMultiSelect [data-baseweb="tag"] {
+        background-color: #c4a882;
+        color: #1a1a1a !important;
     }
 
     /* Tab styling */
-    .stTabs [data-baseweb="tab"] {
-        font-size: 14px;
-        font-weight: 600;
-        color: #6c757d;
+    .stTabs [data-baseweb="tab-list"] {
+        background-color: transparent;
+        border-bottom: 1px solid #d4c5b5;
+        gap: 0px;
     }
+
+    .stTabs [data-baseweb="tab"] {
+        font-family: 'Jost', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 400;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #9e9189;
+        padding: 12px 24px;
+        background-color: transparent;
+        border: none;
+    }
+
     .stTabs [aria-selected="true"] {
-        color: #111111;
-        border-bottom: 2px solid #111111;
+        color: #1a1a1a;
+        border-bottom: 2px solid #1a1a1a;
+        background-color: transparent;
     }
 
     /* Disclaimer banner */
     .disclaimer {
-        background-color: #fff3cd;
-        border: 1px solid #ffc107;
-        border-radius: 6px;
-        padding: 10px 16px;
-        font-size: 12px;
-        color: #856404;
-        margin-bottom: 16px;
+        background-color: #e8ddd4;
+        border: 1px solid #d4c5b5;
+        border-radius: 2px;
+        padding: 12px 20px;
+        font-size: 0.75rem;
+        color: #8b6f5e;
+        letter-spacing: 0.05em;
+        margin-bottom: 20px;
+        font-family: 'Jost', sans-serif;
     }
 
-    /* Section headers */
-    h3 { color: #111111; font-weight: 700; }
+    /* Dividers */
+    hr {
+        border: none;
+        border-top: 1px solid #e8ddd4;
+        margin: 24px 0;
+    }
+
+    /* Info boxes */
+    .stAlert {
+        background-color: #e8ddd4;
+        border: 1px solid #d4c5b5;
+        border-radius: 2px;
+        color: #1a1a1a;
+        font-family: 'Jost', sans-serif;
+        font-weight: 300;
+    }
+
+    /* Dataframe */
+    .stDataFrame {
+        border: 1px solid #e8ddd4;
+        border-radius: 2px;
+    }
+
+    /* Buttons and selectors */
+    .stMultiSelect [data-baseweb="select"] {
+        background-color: #ffffff;
+        border: 1px solid #d4c5b5;
+        border-radius: 2px;
+    }
+
+    /* Spinner */
+    .stSpinner {
+        color: #8b6f5e;
+    }
+
+    /* Remove Streamlit default padding and decoration */
+    .block-container {
+        padding-top: 1rem;
+        padding-bottom: 2rem;
+    }
+
+    /* Hide ALL default Streamlit top elements */
+    [data-testid="stDecoration"] { display: none !important; }
+    [data-testid="stHeader"] { display: none !important; }
+    [data-testid="stToolbar"] { display: none !important; }
+    header { display: none !important; }
+    #MainMenu { display: none !important; }
+
+    /* Pull content all the way to the top */
+    .block-container {
+        padding-top: 0.5rem !important;
+        padding-bottom: 2rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -204,16 +383,24 @@ filtered_customers = customers[
 
 # ========== DISCLAIMER ==========
 st.markdown("""
+<div style="margin-top: 1rem;">
 <div class="disclaimer">
     ⚠️ <strong>Portfolio Project Disclaimer:</strong> This dashboard uses 100% synthetic data
-    generated for demonstration purposes. No real SKIMS customer, product, or sales data is used.
-    I have no affiliation with SKIMS and no access to internal data.
+    generated for demonstration purposes. No real SKIMS customer, product, or
+    sales data is used. I have no affiliation with SKIMS and no access to
+    internal data.
+</div>
 </div>
 """, unsafe_allow_html=True)
 
 # ========== HEADER ==========
 st.title("SKIMS Drop Intelligence")
-st.markdown("*Executive analytics dashboard — Data, Insights & Loyalty Team*")
+st.markdown(
+    "<p style='font-family:Jost,sans-serif; font-size:0.8rem; "
+    "letter-spacing:0.15em; text-transform:uppercase; color:#8b6f5e; "
+    "margin-top:-12px;'>Executive Analytics — Data, Insights & Loyalty</p>",
+    unsafe_allow_html=True
+)
 st.markdown("---")
 
 # ========== TABS ==========
@@ -265,17 +452,17 @@ with tab1:
             x='rewards_tier',
             y='avg_revenue',
             color='rewards_tier',
-            color_discrete_map={
-                'ONYX': '#111111',
-                'MARBLE': '#6c757d',
-                'none': '#ced4da'
-            },
+            color_discrete_map=TIER_COLORS,
             title='Average Net Revenue per Customer by Tier',
             labels={'avg_revenue': 'Avg Net Revenue ($)',
                     'rewards_tier': 'Rewards Tier'}
         )
-        fig.update_layout(showlegend=False, plot_bgcolor='white',
-                          paper_bgcolor='white')
+        fig.update_layout(
+            showlegend=False,
+            plot_bgcolor='#f5f0eb',
+            paper_bgcolor='#f5f0eb',
+            font=dict(family='Jost, sans-serif', color='#1a1a1a')
+        )
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
@@ -285,13 +472,10 @@ with tab1:
             names='rewards_tier',
             title='Share of Total Revenue by Tier',
             color='rewards_tier',
-            color_discrete_map={
-                'ONYX': '#111111',
-                'MARBLE': '#6c757d',
-                'none': '#ced4da'
-            }
+            color_discrete_map=TIER_COLORS,
         )
-        fig2.update_layout(plot_bgcolor='white', paper_bgcolor='white')
+        fig2.update_layout(plot_bgcolor='#f5f0eb', paper_bgcolor='#f5f0eb',
+font=dict(family='Jost, sans-serif', color='#1a1a1a'))
         st.plotly_chart(fig2, use_container_width=True)
 
     st.markdown("---")
@@ -307,12 +491,13 @@ with tab1:
         x='country',
         y='customers',
         color='avg_revenue',
-        color_continuous_scale='Greys',
+        color_continuous_scale=['#e8ddd4', '#c4a882', '#8b6f5e', '#4a3728'],
         title='Top 10 Countries by Customer Count',
         labels={'customers': 'Customers', 'country': 'Country',
                 'avg_revenue': 'Avg Revenue ($)'}
     )
-    fig3.update_layout(plot_bgcolor='white', paper_bgcolor='white')
+    fig3.update_layout(plot_bgcolor='#f5f0eb', paper_bgcolor='#f5f0eb',
+font=dict(family='Jost, sans-serif', color='#1a1a1a'))
     st.plotly_chart(fig3, use_container_width=True)
 
 # ========== TAB 2: DROP PERFORMANCE ==========
@@ -345,8 +530,10 @@ with tab2:
                 'units_sold': 'Units Sold',
                 'category': 'Category'
             },
+            color_discrete_sequence=SKIMS_CAT
         )
-        fig.update_layout(plot_bgcolor='white', paper_bgcolor='white')
+        fig.update_layout(plot_bgcolor='#f5f0eb', paper_bgcolor='#f5f0eb',
+font=dict(family='Jost, sans-serif', color='#1a1a1a'))
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
@@ -358,9 +545,11 @@ with tab2:
             color='category',
             title='Demand Signal Score by Category',
             labels={'demand_signal_score': 'Demand Signal Score',
-                    'count': 'SKUs'}
+                    'count': 'SKUs'},
+            color_discrete_sequence=SKIMS_CAT
         )
-        fig2.update_layout(plot_bgcolor='white', paper_bgcolor='white')
+        fig2.update_layout(plot_bgcolor='#f5f0eb', paper_bgcolor='#f5f0eb',
+font=dict(family='Jost, sans-serif', color='#1a1a1a'))
         st.plotly_chart(fig2, use_container_width=True)
 
     st.markdown("---")
@@ -385,11 +574,12 @@ with tab2:
             y='units_sold',
             title='Units Sold by Size',
             color='return_rate',
-            color_continuous_scale='RdYlGn_r',
+            color_continuous_scale=SKIMS_SEQ,
             labels={'units_sold': 'Units Sold', 'size': 'Size',
                     'return_rate': 'Return Rate (%)'}
         )
-        fig3.update_layout(plot_bgcolor='white', paper_bgcolor='white')
+        fig3.update_layout(plot_bgcolor='#f5f0eb', paper_bgcolor='#f5f0eb',
+font=dict(family='Jost, sans-serif', color='#1a1a1a'))
         st.plotly_chart(fig3, use_container_width=True)
 
     with col2:
@@ -399,13 +589,14 @@ with tab2:
             y='return_rate',
             title='Return Rate by Size',
             color='return_rate',
-            color_continuous_scale='RdYlGn_r',
+            color_continuous_scale=SKIMS_SEQ,
             labels={'return_rate': 'Return Rate (%)', 'size': 'Size'}
         )
         fig4.add_hline(y=size_perf['return_rate'].mean(),
                        line_dash="dash", line_color="black",
                        annotation_text="Average")
-        fig4.update_layout(plot_bgcolor='white', paper_bgcolor='white')
+        fig4.update_layout(plot_bgcolor='#f5f0eb', paper_bgcolor='#f5f0eb',
+font=dict(family='Jost, sans-serif', color='#1a1a1a'))
         st.plotly_chart(fig4, use_container_width=True)
 
     st.markdown("---")
@@ -459,15 +650,17 @@ with tab3:
             x='rewards_tier',
             y='avg_revenue',
             color='rewards_tier',
-            color_discrete_map={
-                'ONYX': '#111111', 'MARBLE': '#6c757d', 'none': '#ced4da'
-            },
+            color_discrete_map=TIER_COLORS,
             title='Average Net Revenue per Customer by Tier',
             labels={'avg_revenue': 'Avg Net Revenue ($)',
                     'rewards_tier': 'Tier'}
         )
-        fig.update_layout(showlegend=False, plot_bgcolor='white',
-                          paper_bgcolor='white')
+        fig.update_layout(
+            showlegend=False,
+            plot_bgcolor='#f5f0eb',
+            paper_bgcolor='#f5f0eb',
+            font=dict(family='Jost, sans-serif', color='#1a1a1a')
+        )
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
@@ -476,14 +669,16 @@ with tab3:
             x='rewards_tier',
             y='avg_orders',
             color='rewards_tier',
-            color_discrete_map={
-                'ONYX': '#111111', 'MARBLE': '#6c757d', 'none': '#ced4da'
-            },
+            color_discrete_map=TIER_COLORS,
             title='Average Orders per Customer by Tier',
             labels={'avg_orders': 'Avg Orders', 'rewards_tier': 'Tier'}
         )
-        fig2.update_layout(showlegend=False, plot_bgcolor='white',
-                           paper_bgcolor='white')
+        fig2.update_layout(
+            showlegend=False,
+            plot_bgcolor='#f5f0eb',
+            paper_bgcolor='#f5f0eb',
+            font=dict(family='Jost, sans-serif', color='#1a1a1a')
+        )
         st.plotly_chart(fig2, use_container_width=True)
 
     st.markdown("---")
@@ -514,10 +709,11 @@ with tab3:
         y='members',
         title='Where Are MARBLE Members in Their ONYX Journey?',
         color='members',
-        color_continuous_scale='Greys',
+        color_continuous_scale=['#e8ddd4', '#c4a882', '#8b6f5e', '#4a3728'],
         labels={'members': 'Number of Members', 'label': 'Progress Stage'}
     )
-    fig3.update_layout(plot_bgcolor='white', paper_bgcolor='white',
+    fig3.update_layout(plot_bgcolor='#f5f0eb', paper_bgcolor='#f5f0eb',
+font=dict(family='Jost, sans-serif', color='#1a1a1a'),
                        showlegend=False)
     st.plotly_chart(fig3, use_container_width=True)
 
@@ -554,9 +750,10 @@ with tab3:
             values='members',
             names='path',
             title='ONYX Members by Qualification Path',
-            color_discrete_sequence=['#111111', '#6c757d', '#adb5bd', '#dee2e6']
+            color_discrete_sequence=['#4a3728', '#8b6f5e', '#c4a882', '#e8ddd4']
         )
-        fig4.update_layout(plot_bgcolor='white', paper_bgcolor='white')
+        fig4.update_layout(plot_bgcolor='#f5f0eb', paper_bgcolor='#f5f0eb',
+font=dict(family='Jost, sans-serif', color='#1a1a1a'))
         st.plotly_chart(fig4, use_container_width=True)
 
     with col2:
@@ -566,11 +763,15 @@ with tab3:
             y='avg_net_revenue',
             title='Avg Revenue by Qualification Path',
             color='path',
-            color_discrete_sequence=['#111111', '#6c757d', '#adb5bd', '#dee2e6'],
+            color_discrete_sequence=['#4a3728', '#8b6f5e', '#c4a882', '#e8ddd4'],
             labels={'avg_net_revenue': 'Avg Net Revenue ($)', 'path': 'Path'}
         )
-        fig5.update_layout(showlegend=False, plot_bgcolor='white',
-                           paper_bgcolor='white')
+        fig5.update_layout(
+            showlegend=False,
+            plot_bgcolor='#f5f0eb',
+            paper_bgcolor='#f5f0eb',
+            font=dict(family='Jost, sans-serif', color='#1a1a1a')
+        )
         st.plotly_chart(fig5, use_container_width=True)
 
 # ========== TAB 4: RETURNS WATCHLIST ==========
@@ -599,10 +800,11 @@ with tab4:
             orientation='h',
             title='Return Rate by Category',
             color='return_rate_pct',
-            color_continuous_scale='RdYlGn_r',
+            color_continuous_scale=SKIMS_SEQ,
             labels={'return_rate_pct': 'Return Rate (%)', 'category': 'Category'}
         )
-        fig.update_layout(plot_bgcolor='white', paper_bgcolor='white',
+        fig.update_layout(plot_bgcolor='#f5f0eb', paper_bgcolor='#f5f0eb',
+font=dict(family='Jost, sans-serif', color='#1a1a1a'),
                           showlegend=False)
         st.plotly_chart(fig, use_container_width=True)
 
@@ -612,12 +814,15 @@ with tab4:
             values='pct_of_returns',
             names='return_reason',
             title='Why Are Customers Returning?',
-            color_discrete_sequence=[
-                '#d7191c', '#f4a582', '#92c5de',
-                '#2c7bb6', '#0571b0', '#999999'
-            ]
+            color_discrete_sequence=SKIMS_CAT
         )
-        fig2.update_layout(plot_bgcolor='white', paper_bgcolor='white')
+        fig2.update_layout(
+            plot_bgcolor='#f5f0eb',
+            paper_bgcolor='#f5f0eb',
+            font=dict(family='Jost, sans-serif', color='#1a1a1a')
+        )
+        fig2.update_layout(plot_bgcolor='#f5f0eb', paper_bgcolor='#f5f0eb',
+font=dict(family='Jost, sans-serif', color='#1a1a1a'))
         st.plotly_chart(fig2, use_container_width=True)
 
     st.markdown("---")
@@ -636,13 +841,14 @@ with tab4:
         y='return_rate_pct',
         title='Return Rate by Size (XXS and XS are the problem)',
         color='return_rate_pct',
-        color_continuous_scale='RdYlGn_r',
+        color_continuous_scale=SKIMS_SEQ,
         labels={'return_rate_pct': 'Return Rate (%)', 'size': 'Size'}
     )
     avg_size_return = size_returns_ordered['return_rate_pct'].mean()
     fig3.add_hline(y=avg_size_return, line_dash="dash",
                    line_color="black", annotation_text=f"Average ({avg_size_return:.1f}%)")
-    fig3.update_layout(plot_bgcolor='white', paper_bgcolor='white',
+    fig3.update_layout(plot_bgcolor='#f5f0eb', paper_bgcolor='#f5f0eb',
+font=dict(family='Jost, sans-serif', color='#1a1a1a'),
                        showlegend=False)
     st.plotly_chart(fig3, use_container_width=True)
 
@@ -654,7 +860,7 @@ with tab4:
         x='return_reason',
         y='revenue_impact',
         color='pct_of_returns',
-        color_continuous_scale='Reds',
+        color_continuous_scale=SKIMS_SEQ,
         title='Revenue Lost by Return Reason',
         labels={
             'revenue_impact': 'Revenue Lost ($)',
@@ -662,7 +868,8 @@ with tab4:
             'pct_of_returns': '% of Returns'
         }
     )
-    fig4.update_layout(plot_bgcolor='white', paper_bgcolor='white')
+    fig4.update_layout(plot_bgcolor='#f5f0eb', paper_bgcolor='#f5f0eb',
+font=dict(family='Jost, sans-serif', color='#1a1a1a'))
     st.plotly_chart(fig4, use_container_width=True)
 
     st.markdown("---")
