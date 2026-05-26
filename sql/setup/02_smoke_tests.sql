@@ -9,7 +9,7 @@ UNION ALL SELECT 'waitlist_signups', COUNT(*) FROM WAITLIST_SIGNUPS
 UNION ALL SELECT 'engagement_events', COUNT(*) FROM ENGAGEMENT_EVENTS
 UNION ALL SELECT 'marketing_touches', COUNT(*) FROM MARKETING_TOUCHES;
 
--- customer tier distribution
+-- customer tier distribution (60/30/10)
 SELECT rewards_tier, COUNT(*) AS customers,
        ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 1) AS pct
 FROM CUSTOMERS
@@ -26,7 +26,7 @@ LEFT JOIN ORDERS o ON c.customer_id = o.customer_id
 GROUP BY c.rewards_tier
 ORDER BY avg_orders_per_customer DESC;
 
--- return rate by category 
+-- return rate by category (sculpt/ swim highest)
 SELECT p.category,
        COUNT(oi.order_id) AS items_sold,
        SUM(CASE WHEN oi.returned_flag THEN 1 ELSE 0 END) AS items_returned,
