@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: raw
+    database: SKIMS_DROP_INTELLIGENCE
+    schema: RAW
+    tables:
+      - name: customers
+        description: "Raw customer records from Shopify"
+      - name: products
+        description: "Raw product catalog"
+      - name: orders
+        description: "Raw order headers"
+      - name: order_items
+        description: "Raw order line items"
+      - name: waitlist_signups
+        description: "Raw waitlist signups for limited drops"
+      - name: engagement_events
+        description: "Raw customer engagement events"
+      - name: marketing_touches
+        description: "Raw marketing channel touches"
