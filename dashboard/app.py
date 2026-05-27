@@ -27,7 +27,7 @@ import snowflake.connector
 
 st.set_page_config(
     page_title="SKIMS Drop Intelligence",
-    page_icon="🖤",
+    page_icon="S",
     layout="wide",
     initial_sidebar_state="expanded"
 )
