@@ -159,9 +159,48 @@ st.markdown("""
         font-size: 0.75rem !important;
     }
 
+    /* Multiselect container background */
+    [data-testid="stSidebar"] .stMultiSelect [data-baseweb="select"] {
+        background-color: #4a3728 !important;
+        border: 1px solid #6b4c3b !important;
+        border-radius: 2px !important;
+    }
+
+    /* The input area inside the select */
+    [data-testid="stSidebar"] .stMultiSelect [data-baseweb="select"] > div {
+        background-color: #4a3728 !important;
+    }
+
+    /* The dropdown input field */
+    [data-testid="stSidebar"] .stMultiSelect input {
+        background-color: #4a3728 !important;
+        color: #f5f0eb !important;
+    }
+
+    /* Selected tags (none, ONYX, MARBLE chips) */
     [data-testid="stSidebar"] .stMultiSelect [data-baseweb="tag"] {
-        background-color: #c4a882;
+        background-color: #c4a882 !important;
         color: #1a1a1a !important;
+        border-radius: 2px !important;
+    }
+
+    /* Tag close button */
+    [data-testid="stSidebar"] .stMultiSelect [data-baseweb="tag"] span {
+        color: #1a1a1a !important;
+    }
+
+    /* Dropdown options list */
+    [data-testid="stSidebar"] [data-baseweb="popover"] {
+        background-color: #3d3028 !important;
+    }
+
+    [data-testid="stSidebar"] [role="option"] {
+        background-color: #3d3028 !important;
+        color: #f5f0eb !important;
+    }
+
+    [data-testid="stSidebar"] [role="option"]:hover {
+        background-color: #4a3728 !important;
     }
 
     /* Tab styling */
@@ -398,20 +437,20 @@ st.title("SKIMS Drop Intelligence")
 st.markdown(
     "<p style='font-family:Jost,sans-serif; font-size:0.8rem; "
     "letter-spacing:0.15em; text-transform:uppercase; color:#8b6f5e; "
-    "margin-top:-12px;'>Executive Analytics — Data, Insights & Loyalty</p>",
+    "margin-top:-12px;'>Data, Insights & Loyalty — Portfolio Project</p>",
     unsafe_allow_html=True
 )
 st.markdown("---")
 
 # ========== TABS ==========
 tab1, tab2, tab3, tab4 = st.tabs([
-    "📊 Executive Summary",
+    "📊 Summary",
     "🚀 Drop Performance",
     "💎 Rewards Health",
     "↩️ Returns Watchlist"
 ])
 
-# ========== TAB 1: EXECUTIVE SUMMARY ==========
+# ========== TAB 1: SUMMARY ==========
 with tab1:
     st.markdown("### Key Performance Indicators")
     st.markdown("*Filtered by selected tier and market segment*")
@@ -606,7 +645,61 @@ font=dict(family='Jost, sans-serif', color='#1a1a1a'))
         'total_waitlist_signups', 'signups_72hr_pre_launch',
         'demand_signal_score', 'units_sold', 'return_rate_pct'
     ]].reset_index(drop=True)
-    st.dataframe(top_drops, use_container_width=True)
+
+    # renaming columns for display
+    top_drops.columns = [
+        'Product ID', 'Category', 'Size', 'Color',
+        'Total Waitlist', '72hr Signups',
+        'Demand Score', 'Units Sold', 'Return Rate %'
+    ]
+
+    # building HTML table
+    rows_html = ""
+    for _, row in top_drops.iterrows():
+        rows_html += "<tr>"
+        for val in row:
+            rows_html += f"<td>{val}</td>"
+        rows_html += "</tr>"
+
+    headers_html = "".join(
+        f"<th>{col}</th>" for col in top_drops.columns
+    )
+
+    st.markdown(f"""
+    <div style="overflow-x: auto;">
+    <table style="
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Jost', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 300;
+        color: #1a1a1a;
+        letter-spacing: 0.03em;
+    ">
+        <thead>
+            <tr style="
+                background-color: #3d3028;
+                color: #f5f0eb;
+                font-size: 0.7rem;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                font-weight: 400;
+            ">
+                {headers_html}
+            </tr>
+        </thead>
+        <tbody>
+            {"".join(
+                f'<tr style="background-color: {"#f5f0eb" if i % 2 == 0 else "#e8ddd4"};">'
+                + "".join(f"<td style='padding: 10px 14px; border-bottom: 1px solid #d4c5b5;'>{val}</td>"
+                        for val in row)
+                + "</tr>"
+                for i, (_, row) in enumerate(top_drops.iterrows())
+            )}
+        </tbody>
+    </table>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ========== TAB 3: REWARDS HEALTH ==========
 with tab3:
@@ -874,16 +967,32 @@ font=dict(family='Jost, sans-serif', color='#1a1a1a'))
 
     st.markdown("---")
     st.markdown("#### Proposed A/B Test: Enhanced Size Guide")
-    st.info("""
-    **Hypothesis:** Adding a fit callout ("This style runs small — consider sizing up")
-    to the top 15 high-return-rate SKUs will reduce returns by 25-50%.
-
-    **Primary metric:** Return rate on targeted SKUs (baseline ~18%, target <15%)
-
-    **Sample size needed:** ~2,400 total visitors (calculated in analysis notebook)
-
-    **Estimated test duration:** 3-6 weeks depending on traffic volume
-
-    **Financial case:** Even a 25% improvement in returns on problem SKUs
-    recovers meaningful revenue annually with minimal engineering cost.
-    """)
+    st.markdown("""
+    <div style="
+        background-color: #e8ddd4;
+        border: 1px solid #c4a882;
+        border-left: 4px solid #8b6f5e;
+        border-radius: 2px;
+        padding: 20px 24px;
+        font-family: 'Jost', sans-serif;
+        font-weight: 300;
+        color: #1a1a1a;
+        letter-spacing: 0.03em;
+        line-height: 1.8;
+    ">
+        <p style="font-size:0.72rem; letter-spacing:0.18em; text-transform:uppercase; 
+        color:#8b6f5e; margin-bottom:12px; font-weight:400;">Proposed Experiment</p>
+        <p><strong style="font-weight:500;">Hypothesis:</strong> Adding a fit callout 
+        ("This style runs small — consider sizing up") to the top 15 high-return-rate 
+        SKUs will reduce returns by 25-50%.</p>
+        <p><strong style="font-weight:500;">Primary metric:</strong> Return rate on 
+        targeted SKUs (baseline ~18%, target &lt;15%)</p>
+        <p><strong style="font-weight:500;">Sample size needed:</strong> ~2,400 total 
+        visitors (calculated in analysis notebook)</p>
+        <p><strong style="font-weight:500;">Estimated test duration:</strong> 3-6 weeks 
+        depending on traffic volume</p>
+        <p><strong style="font-weight:500;">Financial case:</strong> Even a 25% improvement 
+        in returns on problem SKUs recovers meaningful revenue annually with minimal 
+        engineering cost.</p>
+    </div>
+    """, unsafe_allow_html=True)
