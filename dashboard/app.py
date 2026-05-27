@@ -298,6 +298,26 @@ st.markdown("""
         padding-top: 0.5rem !important;
         padding-bottom: 2rem;
     }
+    /* Force fix for multiselect tag clipping in sidebar */
+    [data-testid="stSidebar"] span[data-baseweb="tag"] {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+        margin: 3px !important;
+        min-width: fit-content !important;
+        overflow: visible !important;
+    }
+
+    [data-testid="stSidebar"] span[data-baseweb="tag"] span {
+        overflow: visible !important;
+        text-overflow: unset !important;
+        white-space: nowrap !important;
+    }
+
+    /* Fix the select box container clipping */
+    [data-testid="stSidebar"] div[data-baseweb="select"] {
+        padding: 6px !important;
+        overflow: visible !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -388,7 +408,12 @@ with st.spinner("Loading data from Snowflake..."):
 
 # ========== SIDEBAR ==========
 with st.sidebar:
-    st.markdown("## SKIMS DROP INTELLIGENCE")
+    st.markdown(
+        "<p style='font-family:Jost,sans-serif; font-size:0.75rem; "
+        "letter-spacing:0.18em; text-transform:uppercase; color:#c4a882; "
+        "font-weight:400; margin-bottom:0;'>SKIMS Drop Intelligence</p>",
+        unsafe_allow_html=True
+    )
     st.markdown("---")
     st.markdown("**Data last refreshed:** Synthetic dataset")
     st.markdown("**Records loaded:**")
