@@ -472,7 +472,7 @@ with tab1:
     )
 
     col1.metric("Total Customers", f"{total_customers:,}")
-    col2.metric("Net Revenue", f"${total_revenue:,.0f}")
+    col2.metric("Net Revenue", f"${total_revenue/1_000_000:.2f}M")
     col3.metric("Avg Order Value", f"${avg_aov:,.2f}")
     col4.metric("ONYX Member Rate", f"{onyx_pct:.1f}%")
     col5.metric("Return Rate", f"{overall_return_rate:.1f}%")
@@ -881,7 +881,7 @@ with tab4:
     worst_category = category_returns.iloc[0]['category']
 
     col1, col2, col3 = st.columns(3)
-    col1.metric("Total Returned Revenue", f"${total_returned_rev:,.0f}")
+    col1.metric("Total Returned Revenue", f"${total_returned_rev/1_000_000:.2f}M")
     col2.metric("Avg Return Rate", f"{avg_return_rate:.1f}%")
     col3.metric("Highest Return Category", worst_category)
 
