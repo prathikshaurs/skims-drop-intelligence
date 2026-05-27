@@ -27,7 +27,7 @@ import snowflake.connector
 
 st.set_page_config(
     page_title="SKIMS Drop Intelligence",
-    page_icon="🖤",
+    page_icon="S",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -47,7 +47,7 @@ SKIMS_CAT = [
 TIER_COLORS = {
     'ONYX':   '#4a3728',
     'MARBLE': '#b8a898',
-    'None':   '#e8ddd4'
+    'none':   '#e8ddd4'
 }
 
 CHART_LAYOUT = dict(
@@ -692,7 +692,7 @@ with tab3:
 
     rewards      = filtered_customers[filtered_customers['rewards_tier'].isin(['MARBLE', 'ONYX'])]
     onyx_rev     = filtered_customers[filtered_customers['rewards_tier'] == 'ONYX']['net_revenue'].mean()
-    none_rev     = filtered_customers[filtered_customers['rewards_tier'] == 'None']['net_revenue'].mean()
+    none_rev     = filtered_customers[filtered_customers['rewards_tier'] == 'none']['net_revenue'].mean()
     multiplier   = onyx_rev / none_rev if none_rev > 0 else 0
     marble_count = len(filtered_customers[filtered_customers['rewards_tier'] == 'MARBLE'])
     onyx_count   = len(filtered_customers[filtered_customers['rewards_tier'] == 'ONYX'])
