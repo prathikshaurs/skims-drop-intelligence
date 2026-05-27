@@ -190,6 +190,7 @@ st.markdown("""
     }
 
     /* Dropdown options list */
+            
     [data-testid="stSidebar"] [data-baseweb="popover"] {
         background-color: #3d3028 !important;
     }
