@@ -164,6 +164,7 @@ st.markdown("""
         background-color: #4a3728 !important;
         border: 1px solid #6b4c3b !important;
         border-radius: 2px !important;
+        padding: 4px 4px 4px 6px !important;
     }
 
     /* The input area inside the select */
@@ -182,6 +183,8 @@ st.markdown("""
         background-color: #c4a882 !important;
         color: #1a1a1a !important;
         border-radius: 2px !important;
+        padding: 2px 8px 2px 8px !important;
+        margin: 2px !important;
     }
 
     /* Tag close button */
@@ -385,7 +388,7 @@ with st.spinner("Loading data from Snowflake..."):
 
 # ========== SIDEBAR ==========
 with st.sidebar:
-    st.markdown("## 🖤 SKIMS Drop Intelligence")
+    st.markdown("## SKIMS DROP INTELLIGENCE")
     st.markdown("---")
     st.markdown("**Data last refreshed:** Synthetic dataset")
     st.markdown("**Records loaded:**")
