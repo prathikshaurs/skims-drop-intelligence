@@ -27,7 +27,7 @@ import snowflake.connector
 
 st.set_page_config(
     page_title="SKIMS Drop Intelligence",
-    page_icon="S",
+    page_icon="🖤",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -153,7 +153,14 @@ st.markdown("""
     font-size: 0.75rem !important;
 }
 
-/* ---- Sidebar multiselect ---- */
+/* ---- Hide sidebar toggle button completely ---- */
+[data-testid="stSidebarCollapsedControl"] { display: none !important; }
+[data-testid="stSidebarNavLink"]          { display: none !important; }
+[data-testid="collapsedControl"]          { display: none !important; }
+button[kind="header"]                     { display: none !important; }
+[data-testid="stSidebar"] button          { display: none !important; }
+section[data-testid="stSidebarContent"] > div:first-child button { display: none !important; }
+
 /* ---- Sidebar multiselect ---- */
 [data-testid="stSidebar"] div[data-baseweb="select"] {
     background-color: #4a3728 !important;
@@ -175,7 +182,6 @@ st.markdown("""
     color: #f5f0eb !important;
 }
 
-/* Target tags by role and position in sidebar */
 [data-testid="stSidebar"] [role="button"][data-baseweb="tag"] {
     background-color: #c4a882 !important;
     color: #1a1a1a !important;
@@ -197,7 +203,6 @@ st.markdown("""
     padding-left: 2px !important;
 }
 
-/* Dropdown list */
 [data-testid="stSidebar"] [data-baseweb="popover"] {
     background-color: #3d3028 !important;
 }
@@ -479,10 +484,10 @@ with tab1:
         filtered_customers
         .groupby('rewards_tier')
         .agg(
-            customers   =('customer_id', 'count'),
+            customers    =('customer_id', 'count'),
             total_revenue=('net_revenue', 'sum'),
-            avg_revenue =('net_revenue', 'mean'),
-            avg_orders  =('total_orders', 'mean')
+            avg_revenue  =('net_revenue', 'mean'),
+            avg_orders   =('total_orders', 'mean')
         )
         .reset_index()
         .sort_values('avg_revenue', ascending=False)
@@ -547,9 +552,9 @@ with tab2:
     limited = products[products['is_limited_drop'] == True].copy()
 
     c1, c2, c3 = st.columns(3)
-    c1.metric("Limited Drop SKUs",       f"{len(limited):,}")
-    c2.metric("Avg Waitlist Signups",     f"{limited['total_waitlist_signups'].mean():.0f}")
-    c3.metric("Avg Demand Signal Score",  f"{limited['demand_signal_score'].mean():.0f}")
+    c1.metric("Limited Drop SKUs",      f"{len(limited):,}")
+    c2.metric("Avg Waitlist Signups",    f"{limited['total_waitlist_signups'].mean():.0f}")
+    c3.metric("Avg Demand Signal Score", f"{limited['demand_signal_score'].mean():.0f}")
 
     st.markdown("---")
     col1, col2 = st.columns(2)
@@ -591,7 +596,11 @@ with tab2:
     size_order = ['XXS', 'XS', 'S', 'M', 'L', 'XL', '2X', '3X', '4X']
     size_perf = (
         products.groupby('size')
-        .agg(units_sold=('units_sold','sum'), return_rate=('return_rate_pct','mean'), net_revenue=('net_revenue','sum'))
+        .agg(
+            units_sold  =('units_sold', 'sum'),
+            return_rate =('return_rate_pct', 'mean'),
+            net_revenue =('net_revenue', 'sum')
+        )
         .reset_index()
     )
     size_perf = size_perf[size_perf['size'].isin(size_order)].copy()
@@ -633,21 +642,23 @@ with tab2:
     top_drops = (
         limited.nlargest(10, 'demand_signal_score')
         [[
-            'product_id','category','size','color',
-            'total_waitlist_signups','signups_72hr_pre_launch',
-            'demand_signal_score','units_sold','return_rate_pct'
+            'product_id', 'category', 'size', 'color',
+            'total_waitlist_signups', 'signups_72hr_pre_launch',
+            'demand_signal_score', 'units_sold', 'return_rate_pct'
         ]]
         .reset_index(drop=True)
     )
     top_drops.columns = [
-        'Product ID','Category','Size','Color',
-        'Total Waitlist','72hr Signups',
-        'Demand Score','Units Sold','Return Rate %'
+        'Product ID', 'Category', 'Size', 'Color',
+        'Total Waitlist', '72hr Signups',
+        'Demand Score', 'Units Sold', 'Return Rate %'
     ]
 
-    headers_html = "".join(f"<th style='padding:10px 14px;'>{c}</th>" for c in top_drops.columns)
+    headers_html = "".join(
+        f"<th style='padding:10px 14px;'>{c}</th>" for c in top_drops.columns
+    )
     rows_html = "".join(
-        f'<tr style="background-color:{"#f5f0eb" if i%2==0 else "#e8ddd4"};">'
+        f'<tr style="background-color:{"#f5f0eb" if i % 2 == 0 else "#e8ddd4"};">'
         + "".join(
             f"<td style='padding:10px 14px;border-bottom:1px solid #d4c5b5;'>{v}</td>"
             for v in row
@@ -679,25 +690,29 @@ with tab3:
     st.markdown("### Rewards Program Health")
     st.markdown("*MARBLE and ONYX tier performance, funnel, and member segmentation*")
 
-    rewards     = filtered_customers[filtered_customers['rewards_tier'].isin(['MARBLE','ONYX'])]
-    onyx_rev    = filtered_customers[filtered_customers['rewards_tier']=='ONYX']['net_revenue'].mean()
-    none_rev    = filtered_customers[filtered_customers['rewards_tier']=='none']['net_revenue'].mean()
-    multiplier  = onyx_rev / none_rev if none_rev > 0 else 0
-    marble_count= len(filtered_customers[filtered_customers['rewards_tier']=='MARBLE'])
-    onyx_count  = len(filtered_customers[filtered_customers['rewards_tier']=='ONYX'])
+    rewards      = filtered_customers[filtered_customers['rewards_tier'].isin(['MARBLE', 'ONYX'])]
+    onyx_rev     = filtered_customers[filtered_customers['rewards_tier'] == 'ONYX']['net_revenue'].mean()
+    none_rev     = filtered_customers[filtered_customers['rewards_tier'] == 'none']['net_revenue'].mean()
+    multiplier   = onyx_rev / none_rev if none_rev > 0 else 0
+    marble_count = len(filtered_customers[filtered_customers['rewards_tier'] == 'MARBLE'])
+    onyx_count   = len(filtered_customers[filtered_customers['rewards_tier'] == 'ONYX'])
 
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Rewards Members",      f"{len(rewards):,}")
-    c2.metric("ONYX Members",         f"{onyx_count:,}")
+    c1.metric("Rewards Members",         f"{len(rewards):,}")
+    c2.metric("ONYX Members",            f"{onyx_count:,}")
     c3.metric("ONYX Revenue Multiplier", f"{multiplier:.1f}x")
-    c4.metric("MARBLE Members",       f"{marble_count:,}")
+    c4.metric("MARBLE Members",          f"{marble_count:,}")
 
     st.markdown("---")
 
     tier_kpis = (
         filtered_customers
         .groupby('rewards_tier')
-        .agg(avg_orders=('total_orders','mean'), avg_revenue=('net_revenue','mean'), avg_events=('total_events','mean'))
+        .agg(
+            avg_orders  =('total_orders', 'mean'),
+            avg_revenue =('net_revenue', 'mean'),
+            avg_events  =('total_events', 'mean')
+        )
         .reset_index()
     )
 
@@ -726,7 +741,7 @@ with tab3:
     st.markdown("---")
     st.markdown("#### MARBLE Member Progress Toward ONYX")
 
-    marble_members  = filtered_customers[filtered_customers['rewards_tier']=='MARBLE']
+    marble_members  = filtered_customers[filtered_customers['rewards_tier'] == 'MARBLE']
     progress_counts = marble_members['onyx_progress'].value_counts().reset_index()
     progress_counts.columns = ['onyx_progress', 'members']
 
@@ -755,7 +770,7 @@ with tab3:
     st.markdown("---")
     st.markdown("#### ONYX Qualification Path Analysis")
 
-    onyx_members = filtered_customers[filtered_customers['rewards_tier']=='ONYX'].copy()
+    onyx_members = filtered_customers[filtered_customers['rewards_tier'] == 'ONYX'].copy()
 
     def classify_path(row):
         if row['total_orders'] >= 4 and row['qualifying_actions'] < 10:
@@ -770,7 +785,11 @@ with tab3:
     onyx_members['path'] = onyx_members.apply(classify_path, axis=1)
     path_summary = (
         onyx_members.groupby('path')
-        .agg(members=('customer_id','count'), avg_net_revenue=('net_revenue','mean'), avg_orders=('total_orders','mean'))
+        .agg(
+            members         =('customer_id', 'count'),
+            avg_net_revenue =('net_revenue', 'mean'),
+            avg_orders      =('total_orders', 'mean')
+        )
         .reset_index()
     )
 
@@ -844,7 +863,7 @@ with tab4:
     st.markdown("---")
     st.markdown("#### Return Rate by Size")
 
-    size_order = ['XXS','XS','S','M','L','XL','2X','3X','4X']
+    size_order = ['XXS', 'XS', 'S', 'M', 'L', 'XL', '2X', '3X', '4X']
     size_ret = size_returns.copy()
     size_ret['size'] = pd.Categorical(size_ret['size'], categories=size_order, ordered=True)
     size_ret = size_ret.sort_values('size')
@@ -874,9 +893,9 @@ with tab4:
         color_continuous_scale=SKIMS_SEQ,
         title='Revenue Lost by Return Reason',
         labels={
-            'revenue_impact':  'Revenue Lost ($)',
-            'return_reason':   'Return Reason',
-            'pct_of_returns':  '% of Returns'
+            'revenue_impact': 'Revenue Lost ($)',
+            'return_reason':  'Return Reason',
+            'pct_of_returns': '% of Returns'
         }
     )
     fig4.update_layout(**CHART_LAYOUT)
@@ -902,12 +921,12 @@ with tab4:
         color:#8b6f5e;margin-bottom:12px;font-weight:400;">Proposed Experiment</p>
         <p><strong style="font-weight:500;">Hypothesis:</strong> Adding a fit callout
         ("This style runs small — consider sizing up") to the top 15 high-return-rate
-        SKUs will reduce returns by 25–50%.</p>
+        SKUs will reduce returns by 25-50%.</p>
         <p><strong style="font-weight:500;">Primary metric:</strong> Return rate on
         targeted SKUs (baseline ~18%, target &lt;15%)</p>
         <p><strong style="font-weight:500;">Sample size needed:</strong> ~2,400 total
         visitors (calculated in analysis notebook)</p>
-        <p><strong style="font-weight:500;">Estimated test duration:</strong> 3–6 weeks
+        <p><strong style="font-weight:500;">Estimated test duration:</strong> 3-6 weeks
         depending on traffic volume</p>
         <p><strong style="font-weight:500;">Financial case:</strong> Even a 25% improvement
         in returns on problem SKUs recovers meaningful revenue annually with minimal
