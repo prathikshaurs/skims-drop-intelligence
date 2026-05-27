@@ -154,17 +154,20 @@ st.markdown("""
 }
 
 /* ---- Sidebar multiselect ---- */
+/* ---- Sidebar multiselect ---- */
 [data-testid="stSidebar"] div[data-baseweb="select"] {
     background-color: #4a3728 !important;
     border: 1px solid #6b4c3b !important;
     border-radius: 2px !important;
-    padding: 4px !important;
     overflow: visible !important;
+    padding: 4px !important;
 }
 
 [data-testid="stSidebar"] div[data-baseweb="select"] > div {
     background-color: #4a3728 !important;
     overflow: visible !important;
+    flex-wrap: wrap !important;
+    padding: 4px !important;
 }
 
 [data-testid="stSidebar"] input {
@@ -172,34 +175,39 @@ st.markdown("""
     color: #f5f0eb !important;
 }
 
-[data-testid="stSidebar"] span[data-baseweb="tag"] {
+/* Target tags by role and position in sidebar */
+[data-testid="stSidebar"] [role="button"][data-baseweb="tag"] {
     background-color: #c4a882 !important;
     color: #1a1a1a !important;
     border-radius: 2px !important;
-    padding: 3px 10px 3px 10px !important;
-    margin: 3px 2px !important;
+    padding: 4px 12px !important;
+    margin: 3px !important;
     overflow: visible !important;
-    min-width: 0 !important;
+    max-width: none !important;
+    width: auto !important;
 }
 
-[data-testid="stSidebar"] span[data-baseweb="tag"] span {
+[data-testid="stSidebar"] [role="button"][data-baseweb="tag"] > span:first-child {
     color: #1a1a1a !important;
     overflow: visible !important;
     text-overflow: unset !important;
     white-space: nowrap !important;
+    max-width: none !important;
+    display: inline !important;
+    padding-left: 2px !important;
 }
 
-[data-testid="stSidebar"] [data-baseweb="popover"],
-[data-testid="stSidebar"] ul[role="listbox"] {
+/* Dropdown list */
+[data-testid="stSidebar"] [data-baseweb="popover"] {
     background-color: #3d3028 !important;
 }
 
-[data-testid="stSidebar"] li[role="option"] {
+[data-testid="stSidebar"] [role="option"] {
     background-color: #3d3028 !important;
     color: #f5f0eb !important;
 }
 
-[data-testid="stSidebar"] li[role="option"]:hover {
+[data-testid="stSidebar"] [role="option"]:hover {
     background-color: #4a3728 !important;
 }
 
