@@ -21,10 +21,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import snowflake.connector
 
-# ================================================================
-# PAGE CONFIG - must be first Streamlit call
-# ================================================================
-
+# ========== PAGE CONFIG ==========
 st.set_page_config(
     page_title="SKIMS Drop Intelligence",
     page_icon="🖤",
@@ -32,10 +29,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ================================================================
-# SKIMS BRAND COLORS
-# ================================================================
-
+# ========== SKIMS BRAND COLORS ==========
 SKIMS_SEQ = ['#e8ddd4', '#d4c5b5', '#c4a882', '#b8a898', '#8b6f5e', '#4a3728']
 
 SKIMS_CAT = [
@@ -58,10 +52,7 @@ CHART_LAYOUT = dict(
     margin=dict(t=40, b=20, l=20, r=20)
 )
 
-# ================================================================
-# CSS STYLING
-# ================================================================
-
+# ========== CSS STYLING ==========
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@200;300;400;500&display=swap');
@@ -280,10 +271,7 @@ header                        { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ================================================================
-# SNOWFLAKE CONNECTION
-# ================================================================
-
+# ========== SNOWFLAKE CONNECTION ==========
 @st.cache_resource
 def get_connection():
     creds = st.secrets["snowflake"]
@@ -304,10 +292,7 @@ def run_query(_conn, sql):
 
 conn = get_connection()
 
-# ================================================================
-# DATA LOADING
-# ================================================================
-
+# ========== DATA LOADING ==========
 @st.cache_data(ttl=3600)
 def load_all_data(_conn):
     customers = run_query(_conn, """
@@ -370,10 +355,7 @@ def load_all_data(_conn):
 with st.spinner("Loading data from Snowflake..."):
     customers, products, category_returns, size_returns, return_reasons = load_all_data(conn)
 
-# ================================================================
-# SIDEBAR
-# ================================================================
-
+# ========== SIDEBAR ==========
 with st.sidebar:
     st.markdown(
         "<p style='font-family:Jost,sans-serif;font-size:0.75rem;"
@@ -415,10 +397,7 @@ filtered_customers = customers[
     (customers['market_segment'].isin(market_filter))
 ]
 
-# ================================================================
-# DISCLAIMER
-# ================================================================
-
+# ========== DISCLAIMER ==========
 st.markdown("""
 <div class="disclaimer">
     ⚠️ <strong>Portfolio Project Disclaimer:</strong>
@@ -428,10 +407,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ================================================================
-# HEADER
-# ================================================================
-
+# ========== HEADER ==========
 st.title("SKIMS Drop Intelligence")
 st.markdown(
     "<p style='font-family:Jost,sans-serif;font-size:0.8rem;"
@@ -441,10 +417,7 @@ st.markdown(
 )
 st.markdown("---")
 
-# ================================================================
-# TABS
-# ================================================================
-
+# ========== TABS ==========
 tab1, tab2, tab3, tab4 = st.tabs([
     "📊 Summary",
     "🚀 Drop Performance",
@@ -452,10 +425,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
     "↩️ Returns Watchlist"
 ])
 
-# ================================================================
-# TAB 1: SUMMARY
-# ================================================================
-
+# ========== TAB 1: SUMMARY ==========
 with tab1:
     st.markdown("### Key Performance Indicators")
     st.markdown("*Filtered by selected tier and market segment*")
@@ -541,10 +511,7 @@ with tab1:
     fig3.update_layout(**CHART_LAYOUT)
     st.plotly_chart(fig3, use_container_width=True)
 
-# ================================================================
-# TAB 2: DROP PERFORMANCE
-# ================================================================
-
+# ========== TAB 2: DROP PERFORMANCE ==========
 with tab2:
     st.markdown("### Drop Performance Analysis")
     st.markdown("*Demand signals and size-level performance for limited drop products*")
@@ -682,10 +649,7 @@ with tab2:
     </div>
     """, unsafe_allow_html=True)
 
-# ================================================================
-# TAB 3: REWARDS HEALTH
-# ================================================================
-
+# ========== TAB 3: REWARDS HEALTH ==========
 with tab3:
     st.markdown("### Rewards Program Health")
     st.markdown("*MARBLE and ONYX tier performance, funnel, and member segmentation*")
@@ -817,10 +781,7 @@ with tab3:
         fig5.update_layout(showlegend=False, **CHART_LAYOUT)
         st.plotly_chart(fig5, use_container_width=True)
 
-# ================================================================
-# TAB 4: RETURNS WATCHLIST
-# ================================================================
-
+# ========== TAB 4: RETURNS WATCHLIST ==========
 with tab4:
     st.markdown("### Returns Watchlist")
     st.markdown("*Return rate analysis by category, size, and reason*")
