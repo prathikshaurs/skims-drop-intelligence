@@ -272,7 +272,6 @@ header                        { display: none !important; }
 """, unsafe_allow_html=True)
 
 # ========== SNOWFLAKE CONNECTION ==========
-@st.cache_resource
 def get_connection():
     creds = st.secrets["snowflake"]
     return snowflake.connector.connect(
@@ -285,25 +284,27 @@ def get_connection():
     )
 
 @st.cache_data(ttl=3600)
-def run_query(_conn, sql):
-    df = pd.read_sql(sql, _conn)
-    df.columns = [c.lower() for c in df.columns]
-    return df
-
-conn = get_connection()
+def run_query(sql):
+    conn = get_connection()
+    try:
+        df = pd.read_sql(sql, conn)
+        df.columns = [c.lower() for c in df.columns]
+        return df
+    finally:
+        conn.close()
 
 # ========== DATA LOADING ==========
 @st.cache_data(ttl=3600)
-def load_all_data(_conn):
-    customers = run_query(_conn, """
+def load_all_data():
+    customers = run_query("""
         SELECT * FROM SKIMS_DROP_INTELLIGENCE.DBT_DEV_MARTS.MART_CUSTOMER_360
     """)
 
-    products = run_query(_conn, """
+    products = run_query("""
         SELECT * FROM SKIMS_DROP_INTELLIGENCE.DBT_DEV_MARTS.MART_PRODUCT_PERFORMANCE
     """)
 
-    category_returns = run_query(_conn, """
+    category_returns = run_query("""
         SELECT
             p.category,
             COUNT(oi.order_id)                                              AS items_sold,
@@ -318,7 +319,7 @@ def load_all_data(_conn):
         ORDER BY return_rate_pct DESC
     """)
 
-    size_returns = run_query(_conn, """
+    size_returns = run_query("""
         SELECT
             p.size,
             COUNT(oi.order_id)                                              AS items_sold,
@@ -338,7 +339,7 @@ def load_all_data(_conn):
             END
     """)
 
-    return_reasons = run_query(_conn, """
+    return_reasons = run_query("""
         SELECT
             return_reason,
             COUNT(*)                                                        AS returns,
@@ -353,7 +354,7 @@ def load_all_data(_conn):
     return customers, products, category_returns, size_returns, return_reasons
 
 with st.spinner("Loading data from Snowflake..."):
-    customers, products, category_returns, size_returns, return_reasons = load_all_data(conn)
+    customers, products, category_returns, size_returns, return_reasons = load_all_data()
 
 # ========== SIDEBAR ==========
 with st.sidebar:
