@@ -19,7 +19,6 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-# import snowflake.connector
 import duckdb
 from pathlib import Path
 
@@ -273,29 +272,6 @@ header                        { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ========== SNOWFLAKE CONNECTION ==========
-""" def get_connection():
-    creds = st.secrets["snowflake"]
-    return snowflake.connector.connect(
-        account=creds["account"],
-        user=creds["user"],
-        password=creds["password"],
-        database=creds["database"],
-        warehouse=creds["warehouse"],
-        role=creds["role"]
-    )
-
-@st.cache_data(ttl=3600)
-def run_query(sql):
-    conn = get_connection()
-    try:
-        df = pd.read_sql(sql, conn)
-        df.columns = [c.lower() for c in df.columns]
-        return df
-    finally:
-        conn.close()
-"""
-
 # ========== DUCKDB CONNECTION ==========
 DB_PATH = Path(__file__).parent.parent / "skims_dna.duckdb"
 
@@ -372,7 +348,7 @@ def load_all_data():
 
     return customers, products, category_returns, size_returns, return_reasons
 
-with st.spinner("Loading data from Snowflake..."):
+with st.spinner("Loading dashboard data...."):
     customers, products, category_returns, size_returns, return_reasons = load_all_data()
 
 # ========== SIDEBAR ==========
@@ -408,7 +384,7 @@ with st.sidebar:
         "**About this dashboard**\n\n"
         "Built by Prathiksha Mohan Raje Urs as a portfolio project "
         "for the SKIMS Senior Data Analyst role.\n\n"
-        "Stack: Python · Snowflake · dbt · Streamlit"
+        "Stack: Python · DuckDB · dbt · Streamlit"
     )
 
 # Apply filters
