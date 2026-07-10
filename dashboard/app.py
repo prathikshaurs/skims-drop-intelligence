@@ -430,7 +430,7 @@ with tab1:
     total_revenue   = filtered_customers['net_revenue'].sum()
     avg_aov         = filtered_customers['avg_order_value'].mean()
     onyx_pct        = (filtered_customers['rewards_tier'] == 'ONYX').mean() * 100
-    denom           = filtered_customers['total_orders'].sum()
+    denom           = filtered_customers['total_items_ordered'].sum()
     overall_return_rate = (
         filtered_customers['total_items_returned'].sum() / denom * 100
         if denom > 0 else 0
@@ -709,8 +709,10 @@ with tab3:
         'early_stage':              'Early Stage',
         'halfway_engagement':       'Halfway (Engagement)',
         'halfway_purchase':         'Halfway (Purchase)',
+        'halfway_multiple':         'Halfway (Both)',
         'engagement_path_complete': 'Engagement Complete',
         'purchase_path_complete':   'Purchase Complete',
+        'multiple_paths_complete':  'Multiple Paths Complete',
         'qualified':                'Qualified'
     }
     progress_counts['label'] = progress_counts['onyx_progress'].map(

@@ -29,6 +29,7 @@ final as (
         coalesce(o.total_revenue, 0)            as total_revenue,
         coalesce(o.avg_order_value, 0)          as avg_order_value,
         coalesce(o.total_returned_revenue, 0)   as total_returned_revenue,
+        coalesce(o.total_items_ordered, 0)      as total_items_ordered,
         coalesce(o.total_items_returned, 0)     as total_items_returned,
         o.first_order_date,
         o.last_order_date,
@@ -50,8 +51,12 @@ final as (
         -- ONYX qualification progress (for non-ONYX members)
         case
             when c.rewards_tier = 'ONYX' then 'qualified'
+            when coalesce(o.total_orders, 0) >= 4
+                and coalesce(e.qualifying_actions, 0) >= 10 then 'multiple_paths_complete'
             when coalesce(o.total_orders, 0) >= 4 then 'purchase_path_complete'
             when coalesce(e.qualifying_actions, 0) >= 10 then 'engagement_path_complete'
+            when coalesce(o.total_orders, 0) >= 2
+                and coalesce(e.qualifying_actions, 0) >= 5 then 'halfway_multiple'
             when coalesce(o.total_orders, 0) >= 2 then 'halfway_purchase'
             when coalesce(e.qualifying_actions, 0) >= 5 then 'halfway_engagement'
             else 'early_stage'
