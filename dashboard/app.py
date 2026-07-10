@@ -316,11 +316,11 @@ def run_query(sql):
 @st.cache_data(ttl=3600)
 def load_all_data():
     customers = run_query("""
-        SELECT * FROM SKIMS_DROP_INTELLIGENCE.DBT_DEV_MARTS.MART_CUSTOMER_360
+        SELECT * FROM main_MARTS.mart_customer_360
     """)
 
     products = run_query("""
-        SELECT * FROM SKIMS_DROP_INTELLIGENCE.DBT_DEV_MARTS.MART_PRODUCT_PERFORMANCE
+        SELECT * FROM main_MARTS.mart_product_performance
     """)
 
     category_returns = run_query("""
@@ -331,8 +331,8 @@ def load_all_data():
             ROUND(100.0 * SUM(CASE WHEN oi.returned_flag = TRUE THEN 1 ELSE 0 END)
                   / COUNT(oi.order_id), 1)                                  AS return_rate_pct,
             SUM(oi.returned_revenue)                                        AS returned_revenue
-        FROM SKIMS_DROP_INTELLIGENCE.DBT_DEV_STAGING.STG_ORDER_ITEMS oi
-        JOIN SKIMS_DROP_INTELLIGENCE.DBT_DEV_STAGING.STG_PRODUCTS p
+        FROM main_STAGING.stg_order_items oi
+        JOIN main_STAGING.stg_products p
             ON oi.product_id = p.product_id
         GROUP BY p.category
         ORDER BY return_rate_pct DESC
@@ -346,8 +346,8 @@ def load_all_data():
             ROUND(100.0 * SUM(CASE WHEN oi.returned_flag = TRUE THEN 1 ELSE 0 END)
                   / COUNT(oi.order_id), 1)                                  AS return_rate_pct,
             SUM(oi.returned_revenue)                                        AS returned_revenue
-        FROM SKIMS_DROP_INTELLIGENCE.DBT_DEV_STAGING.STG_ORDER_ITEMS oi
-        JOIN SKIMS_DROP_INTELLIGENCE.DBT_DEV_STAGING.STG_PRODUCTS p
+        FROM main_STAGING.stg_order_items oi
+        JOIN main_STAGING.stg_products p
             ON oi.product_id = p.product_id
         GROUP BY p.size
         ORDER BY
@@ -364,7 +364,7 @@ def load_all_data():
             COUNT(*)                                                        AS returns,
             ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 1)             AS pct_of_returns,
             SUM(returned_revenue)                                           AS revenue_impact
-        FROM SKIMS_DROP_INTELLIGENCE.DBT_DEV_STAGING.STG_ORDER_ITEMS
+        FROM main_STAGING.stg_order_items
         WHERE returned_flag = TRUE
         GROUP BY return_reason
         ORDER BY returns DESC
