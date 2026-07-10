@@ -34,7 +34,7 @@ Instead of writing a cover letter describing how I would approach these problems
 |---|---|---|
 | [Drop Demand Forecast](analyses/01_drop_demand_forecast.ipynb) | How many units by size should we buy for an upcoming drop? | Gradient boosting, feature engineering, waitlist signal analysis |
 | [Rewards Program Analysis](analyses/02_rewards_program_analysis.ipynb) | Which MARBLE members are closest to ONYX, and how do we nudge them? | K-means segmentation, cohort analysis, LTV modeling, next-best-action |
-| [Returns Analysis + A/B Test Design](analyses/03_returns_analysis_ab_test.ipynb) | Where are returns concentrated and what experiment would reduce them? | Return driver analysis, sample size calculation, experiment design |
+| [Returns Analysis + A/B Test Design](analyses/returns_analysis_ab_test.ipynb) | Where are returns concentrated and what experiment would reduce them? | Return driver analysis, sample size calculation, experiment design |
 
 ### A Looker-style executive dashboard
 
