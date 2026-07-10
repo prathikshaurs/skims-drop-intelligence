@@ -19,7 +19,9 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-import snowflake.connector
+# import snowflake.connector
+import duckdb
+from pathlib import Path
 
 # ========== PAGE CONFIG ==========
 st.set_page_config(
@@ -272,7 +274,7 @@ header                        { display: none !important; }
 """, unsafe_allow_html=True)
 
 # ========== SNOWFLAKE CONNECTION ==========
-def get_connection():
+""" def get_connection():
     creds = st.secrets["snowflake"]
     return snowflake.connector.connect(
         account=creds["account"],
@@ -288,6 +290,23 @@ def run_query(sql):
     conn = get_connection()
     try:
         df = pd.read_sql(sql, conn)
+        df.columns = [c.lower() for c in df.columns]
+        return df
+    finally:
+        conn.close()
+"""
+
+# ========== DUCKDB CONNECTION ==========
+DB_PATH = Path(__file__).parent.parent / "skims_dna.duckdb"
+
+def get_connection():
+    return duckdb.connect(str(DB_PATH), read_only=True)
+
+@st.cache_data(ttl=3600)
+def run_query(sql):
+    conn = get_connection()
+    try:
+        df = conn.execute(sql).fetchdf()
         df.columns = [c.lower() for c in df.columns]
         return df
     finally:

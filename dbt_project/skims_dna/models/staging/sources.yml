@@ -2,8 +2,8 @@ version: 2
 
 sources:
   - name: raw
-    database: SKIMS_DROP_INTELLIGENCE
-    schema: RAW
+    # database: SKIMS_DROP_INTELLIGENCE
+    schema: raw
     tables:
       - name: customers
         description: "Raw customer records from Shopify"

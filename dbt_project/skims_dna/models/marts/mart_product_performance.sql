@@ -25,7 +25,8 @@ waitlist as (
         count(waitlist_id) as total_waitlist_signups,
         sum(
             case
-                when signup_timestamp >= dateadd('hour', -72, launch_date::timestamp)
+                -- when signup_timestamp >= dateadd('hour', -72, launch_date::timestamp)
+                when signup_timestamp >= (launch_date::timestamp - INTERVAL 72 HOUR)
                 then 1 else 0
             end
         ) as signups_72hr_pre_launch

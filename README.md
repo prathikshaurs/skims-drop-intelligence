@@ -20,6 +20,8 @@ Public reviews consistently cite sizing confusion as the primary reason for retu
 **3. The MARBLE/ONYX rewards program is brand new and needs analytical infrastructure.**
 Launched in 2024, the two-tier program offers three paths to ONYX status. Which path produces the highest-LTV customer? Where do MARBLE members stall? What is the single best next action per segment? These are exactly the questions a founding loyalty analyst would be answering in their first 60 days.
 
+A note on the stack: the dashboard now runs on DuckDB instead of a live Snowflake connection, since that required an active account. The dbt project itself (12 models, staging -> intermediate -> marts) is unchanged.
+
 Instead of writing a cover letter describing how I would approach these problems, I built the analysis.
 
 ---
@@ -52,7 +54,7 @@ The entire project is built end-to-end on SKIMS' actual stack:
 | Layer | Tool | SKIMS Equivalent |
 |---|---|---|
 | Data Generation | Python, Faker | Shopify, NetSuite, Klaviyo |
-| Data Warehouse | Snowflake | Snowflake |
+| Data Warehouse | DuckDB | Snowflake |
 | Transformation | dbt (12 models) | dbt |
 | Staging | `stg_customers`, `stg_orders`, `stg_products`, `stg_order_items`, `stg_waitlist_signups`, `stg_engagement_events`, `stg_marketing_touches` | dbt staging layer |
 | Intermediate | `int_customer_orders`, `int_customer_engagement`, `int_product_return_rates` | dbt intermediate layer |
@@ -115,6 +117,7 @@ These patterns are intentional. They make the analysis realistic and the insight
 
 ```
 skims-drop-intelligence/
+├── skims_dna.duckdb              # DuckDB database file (dbt build output)
 ├── data_generation/
 │   └── generate_data.py          # Synthetic data generator
 ├── dbt_project/
@@ -144,8 +147,7 @@ skims-drop-intelligence/
 
 ### Prerequisites
 - Python 3.11+
-- A Snowflake account
-- dbt Core with the Snowflake adapter
+- dbt Core with the dbt-duckdb adapter
 
 ### Setup
 
@@ -167,27 +169,32 @@ pip install -r requirements.txt
 python data_generation/generate_data.py
 ```
 
-**4. Set up Snowflake**
+**4. Load the raw data into DuckDB**
 
-Create a Snowflake account, then run the SQL in `sql/setup/01_create_tables.sql` to create the database, schema, and tables. Load the generated CSVs from `data/raw/` using Snowflake's Load Data wizard.
+```python
+import duckdb
+
+con = duckdb.connect("skims_dna.duckdb")
+con.execute("CREATE SCHEMA IF NOT EXISTS raw")
+
+tables = ["customers", "products", "orders", "order_items",
+          "waitlist_signups", "engagement_events", "marketing_touches"]
+
+for t in tables:
+    con.execute(f"CREATE OR REPLACE TABLE raw.{t} AS SELECT * FROM read_csv_auto('data/raw/{t}.csv')")
+```
 
 **5. Configure dbt**
 
-Create `~/.dbt/profiles.yml` with your Snowflake credentials:
+Create `~/.dbt/profiles.yml` pointing at a local DuckDB file:
 ```yaml
 skims_dna:
+  target: dev
   outputs:
     dev:
-      type: snowflake
-      account: YOUR_ACCOUNT
-      user: YOUR_USER
-      password: YOUR_PASSWORD
-      role: ACCOUNTADMIN
-      warehouse: COMPUTE_WH
-      database: SKIMS_DROP_INTELLIGENCE
-      schema: DBT_DEV
+      type: duckdb
+      path: /path/to/skims_dna.duckdb
       threads: 4
-  target: dev
 ```
 
 Run dbt:
@@ -196,20 +203,10 @@ cd dbt_project/skims_dna
 dbt run
 ```
 
-**6. Configure and run the Streamlit dashboard**
+**6. Run the Streamlit dashboard**
 
-Create `.streamlit/secrets.toml` in the project root:
-```toml
-[snowflake]
-account = "YOUR_ACCOUNT"
-user = "YOUR_USER"
-password = "YOUR_PASSWORD"
-database = "SKIMS_DROP_INTELLIGENCE"
-warehouse = "COMPUTE_WH"
-role = "ACCOUNTADMIN"
-```
+No credentials needed, the dashboard reads directly from the `skims_dna.duckdb` file at the repo root.
 
-Run the dashboard:
 ```bash
 streamlit run dashboard/app.py
 ```
@@ -235,7 +232,7 @@ Present a 6-month analytics roadmap to the loyalty and merchandising teams. Prio
 
 ## Stack
 
-Python · Snowflake · dbt · Streamlit · Plotly · Scikit-learn · Pandas · GitHub
+Python · DuckDB · dbt · Streamlit · Plotly · Scikit-learn · Pandas · GitHub
 
 ---
 
